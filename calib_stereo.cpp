@@ -26,17 +26,17 @@ void load_image_points(int board_width, int board_height, int num_imgs, float sq
     char left_img[100], right_img[100];
     sprintf(left_img, "%s%s%d.%s", leftimg_dir, leftimg_filename, i, extension);
     sprintf(right_img, "%s%s%d.%s", rightimg_dir, rightimg_filename, i, extension);
-    img1 = imread(left_img, CV_LOAD_IMAGE_COLOR);
-    img2 = imread(right_img, CV_LOAD_IMAGE_COLOR);
-    cvtColor(img1, gray1, CV_BGR2GRAY);
-    cvtColor(img2, gray2, CV_BGR2GRAY);
+    img1 = imread(left_img, IMREAD_ANYDEPTH);
+    img2 = imread(right_img, IMREAD_ANYDEPTH);
+    img1.convertTo(gray1, CV_8U, 1/256.0);
+    img2.convertTo(gray2, CV_8U, 1/256.0);
 
     bool found1 = false, found2 = false;
 
-    found1 = cv::findChessboardCorners(img1, board_size, corners1,
-  CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
-    found2 = cv::findChessboardCorners(img2, board_size, corners2,
-  CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+    found1 = cv::findChessboardCorners(gray1, board_size, corners1,
+  CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_NORMALIZE_IMAGE | CV_CALIB_CB_FILTER_QUADS);
+    found2 = cv::findChessboardCorners(gray2, board_size, corners2,
+  CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_NORMALIZE_IMAGE | CV_CALIB_CB_FILTER_QUADS);
 
 
     if(!found1 || !found2){

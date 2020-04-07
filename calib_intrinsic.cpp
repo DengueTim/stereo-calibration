@@ -32,19 +32,24 @@ void setup_calibration(int board_width, int board_height, int num_imgs,
   for (int k = 1; k <= num_imgs; k++) {
     char img_file[100];
     sprintf(img_file, "%s%s%d.%s", imgs_directory, imgs_filename, k, extension);
-    if(!doesExist(img_file))
+    if(!doesExist(img_file)) {
+      cout << "No image file named:" << img_file << endl;
       continue;
-    img = imread(img_file, CV_LOAD_IMAGE_COLOR);
-    cv::cvtColor(img, gray, CV_BGR2GRAY);
+    }
+    img = imread(img_file, IMREAD_ANYDEPTH);
+    img.convertTo(gray, CV_8U, 1/256.0);
 
     bool found = false;
-    found = cv::findChessboardCorners(img, board_size, corners,
-                                      CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
-    if (found)
-    {
+    found = cv::findChessboardCorners(gray, board_size, corners,
+                                      CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_NORMALIZE_IMAGE | CV_CALIB_CB_FILTER_QUADS);
+    if (found) {
       cornerSubPix(gray, corners, cv::Size(5, 5), cv::Size(-1, -1),
                    TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 30, 0.1));
       drawChessboardCorners(gray, board_size, corners, found);
+//      sprintf(img_file, "./%s%dBoard.png", imgs_filename, k);
+//      imwrite(img_file, gray);
+    } else {
+      cout << "No checker board found in image:" << img_file << endl;
     }
     
     vector< Point3f > obj;
