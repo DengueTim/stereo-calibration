@@ -11,6 +11,7 @@ using namespace cv;
 
 int main(int argc, char const *argv[])
 {
+  int toGray8Bit=0;
   char* leftimg_filename;
   char* rightimg_filename;
   char* calib_file;
@@ -18,6 +19,7 @@ int main(int argc, char const *argv[])
   char* rightout_filename;
 
   static struct poptOption options[] = {
+	{ "convert_to_gray_8bit",'8',POPT_ARG_NONE,&toGray8Bit,0,"Convert 16-bit gray-scale images to 8-bit",NULL },
     { "leftimg_filename",'l',POPT_ARG_STRING,&leftimg_filename,0,"Left imgage path","STR" },
     { "rightimg_filename",'r',POPT_ARG_STRING,&rightimg_filename,0,"Right image path","STR" },
     { "calib_file",'c',POPT_ARG_STRING,&calib_file,0,"Stereo calibration file","STR" },
@@ -35,8 +37,13 @@ int main(int argc, char const *argv[])
   Mat K1, K2, R;
   Vec3d T;
   Mat D1, D2;
-  Mat img1 = imread(leftimg_filename, CV_LOAD_IMAGE_COLOR);
-  Mat img2 = imread(rightimg_filename, CV_LOAD_IMAGE_COLOR);
+  Mat img1 = imread(leftimg_filename, IMREAD_ANYDEPTH);
+  Mat img2 = imread(rightimg_filename, IMREAD_ANYDEPTH);
+
+  if (toGray8Bit) {
+	  img1.convertTo(img1, CV_8U, 1/256.0);
+	  img2.convertTo(img2, CV_8U, 1/256.0);
+  }
 
   cv::FileStorage fs1(calib_file, cv::FileStorage::READ);
   fs1["K1"] >> K1;

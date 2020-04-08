@@ -147,7 +147,8 @@ int main(int argc, char const *argv[])
   printf("Starting Rectification\n");
 
   cv::Mat R1, R2, P1, P2, Q;
-  stereoRectify(K1, D1, K2, D2, img1.size(), R, T, R1, R2, P1, P2, Q);
+  // Calibrate maintaining image size and cropping resulting invalid pixels from edges.
+  stereoRectify(K1, D1, K2, D2, img1.size(), R, T, R1, R2, P1, P2, Q, CALIB_ZERO_DISPARITY, 0, img1.size());
 
   fs1 << "R1" << R1;
   fs1 << "R2" << R2;
