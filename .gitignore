@@ -29,3 +29,7 @@ Compiled Object files
 
 build/
 calib_imgs/
+
+.cproject
+.project
+.settings/
